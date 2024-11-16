@@ -8,6 +8,7 @@
     tools:context=".fragments.add.AddFragment">
 
 
+
     <EditText
         android:id="@+id/title_at"
         android:layout_width="0dp"
@@ -55,4 +56,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/priorities_spinner" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
