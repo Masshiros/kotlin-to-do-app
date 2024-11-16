@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
 
-    id ("org.jetbrains.kotlin.android") version "1.8.0" apply false
+    id ("org.jetbrains.kotlin.android") version "1.9.10" apply false
 }
 buildscript {
     repositories {
@@ -16,13 +16,7 @@ buildscript {
     }
 }
 
-//allprojects {
-//    repositories {
-//        google()
-//        mavenCentral()
-//        // Include any other necessary repositories
-//    }
-//}
+
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
