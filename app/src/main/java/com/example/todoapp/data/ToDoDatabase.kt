@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.todoapp.data.models.ToDoEntity
 
-@Database(entities = [ToDoEntity::class], version = 1, exportSchema = false)
+@Database(entities = [ToDoEntity::class], version = 2, exportSchema = false)
 @TypeConverters(DbConverter::class)
 abstract class ToDoDatabase : RoomDatabase() {
     abstract fun toDoDao(): ToDoDao
@@ -27,4 +29,6 @@ abstract class ToDoDatabase : RoomDatabase() {
                 ToDoDatabase::class.java, "todo_database"
             ).build()
     }
+
+
 }

@@ -30,5 +30,9 @@ interface ToDoDao {
 
     @Query("SELECT * FROM todos_table ORDER BY CASE WHEN priority LIKE 'L%' THEN 1 WHEN priority LIKE 'M%' THEN 2 WHEN priority LIKE 'H%' THEN 3 END")
     fun sortByLowPriority(): LiveData<List<ToDoEntity>>
+    @Query("UPDATE todos_table SET completed = :completed WHERE id = :id")
+    suspend fun markAsCompleted(id: Int,completed:Boolean)
 
+    @Query("UPDATE todos_table SET completed = 1")
+    suspend fun markAllAsCompleted()
 }

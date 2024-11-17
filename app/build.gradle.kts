@@ -73,5 +73,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     androidTestImplementation(libs.androidx.room.testing)
+    // recycle view animator
+    implementation (libs.recyclerview.animators)
 
 }

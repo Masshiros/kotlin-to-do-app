@@ -26,6 +26,18 @@
             app:cardBackgroundColor="@color/red"
             app:cardCornerRadius="100dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/completed_checkbox"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <CheckBox
+            android:id="@+id/completed_checkbox"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+
+
+            android:gravity="center"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

@@ -67,7 +67,6 @@ class AddFragment : Fragment() {
                 priority =  mSharedVM.mapPriority(priority),
                 description=description,
             )
-            Toast.makeText(requireContext(),"${data.id}",Toast.LENGTH_LONG).show()
             mToDoVM.insertData(data)
             Toast.makeText(requireContext(),"Successfully added",Toast.LENGTH_LONG).show()
             findNavController().navigate(R.id.action_addFragment_to_listFragment)

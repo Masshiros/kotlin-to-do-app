@@ -13,7 +13,7 @@ import com.example.todoapp.data.models.EPriority
 import com.example.todoapp.data.models.ToDoEntity
 
 class SharedVM(application:Application): AndroidViewModel(application) {
-    val emptyDb: MutableLiveData<Boolean> = MutableLiveData(true)
+    val emptyDb: MutableLiveData<Boolean> = MutableLiveData(false)
     fun checkEmptyDb(datas: List<ToDoEntity>){
         emptyDb.value = datas.isEmpty()
     }
@@ -41,9 +41,7 @@ class SharedVM(application:Application): AndroidViewModel(application) {
         }
     }
     fun validateDataFromUser(title:String, description: String):Boolean{
-        return if(TextUtils.isEmpty(title) || TextUtils.isEmpty(description)) {
-            false
-        } else !(title.isEmpty() || description.isEmpty())
+        return !(title.isEmpty() || description.isEmpty())
     }
     fun mapPriority(priority: String): EPriority {
         return when(priority){

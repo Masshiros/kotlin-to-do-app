@@ -10,24 +10,34 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.appcompat.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.todoapp.R
 import com.example.todoapp.data.SharedVM
+import com.example.todoapp.data.models.ToDoEntity
 import com.example.todoapp.data.viewmodels.ToDoVM
+import com.example.todoapp.fragments.list.adapter.ListAdapter
+import com.example.todoapp.utils.hideVirtualKeyBoard
+import com.example.todoapp.utils.oneTimeObserve
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import org.w3c.dom.Text
+import com.google.android.material.snackbar.Snackbar
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 
-class ListFragment : Fragment(){
-    private val adapter: ListAdapter by lazy {ListAdapter() }
+class ListFragment : Fragment(), SearchView.OnQueryTextListener{
+    private val adapter: ListAdapter by lazy { ListAdapter() }
 
     private val mToDoVM:ToDoVM by viewModels()
     private val mSharedVM:SharedVM by viewModels()
@@ -40,10 +50,20 @@ class ListFragment : Fragment(){
         // fetch data with adapter
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        recyclerView.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+        recyclerView.itemAnimator = SlideInUpAnimator().apply{
+            addDuration=300
+        }
+        // swipe to delete
+        swipeToDelete(recyclerView)
 
         mToDoVM.getAllData.observe(viewLifecycleOwner, Observer { data ->
             mSharedVM.checkEmptyDb(data)
+            // mark as complete
+            adapter.onItemCheckedListener = {todoEntity,isChecked ->
+                mToDoVM.markAsCompleted(todoEntity.id,isChecked)
+                Toast.makeText(requireContext(),"Mark as completed successfully: '${todoEntity.title}'",Toast.LENGTH_SHORT).show()
+            }
             adapter.setData(data)
 
             Log.d("ListFragment", "Received new data: ${data.size}")
@@ -62,8 +82,15 @@ class ListFragment : Fragment(){
         }
         // menu
         setHasOptionsMenu(true)
+        // hide keyboard
+        hideVirtualKeyBoard(requireActivity())
 
         return view
+    }
+    private fun markAllAsCompleted(){
+        mToDoVM.markAllAsCompleted()
+        Toast.makeText(requireContext(),"Mark all as completed successfully",Toast.LENGTH_SHORT).show()
+
     }
 
     private fun showEmptyDbViews(emptyDb: Boolean) {
@@ -77,13 +104,45 @@ class ListFragment : Fragment(){
         }
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-       inflater.inflate(R.menu.list_fragment_menu,menu)
+        inflater.inflate(R.menu.list_fragment_menu,menu)
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
+    }
+    private fun swipeToDelete(recyclerView: RecyclerView){
+        val swipeToDeleteCallBack = object : SwipeToDelete(){
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val itemToDelete = adapter.datas[viewHolder.adapterPosition]
+                mToDoVM.deleteItem(itemToDelete)
+                adapter.notifyItemRemoved(viewHolder.adapterPosition)
+                Toast.makeText(requireContext(),"Successfully remove: '${itemToDelete.title}'",Toast.LENGTH_SHORT).show()
+                // restore data
+                restoreDeletedData(viewHolder.itemView,itemToDelete)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallBack)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+    private fun restoreDeletedData(view:View,deletedData: ToDoEntity){
+        val snackbar = Snackbar.make(
+            view,"Deleted '${deletedData.title}'",
+            Snackbar.LENGTH_LONG
+        )
+        snackbar.setAction("Undo"){
+            mToDoVM.insertData(deletedData)
+        }
+        snackbar.show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.menu_delete_all -> confirmRemoval()
+            R.id.menu_priority_high -> mToDoVM.sortByHighPriority.observe(viewLifecycleOwner, Observer { adapter.setData(it) })
+            R.id.menu_priority_low -> mToDoVM.sortByLowPriority.observe(viewLifecycleOwner, Observer { adapter.setData(it) })
+            R.id.menu_mark_all -> markAllAsCompleted()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -99,6 +158,29 @@ class ListFragment : Fragment(){
         builder.setTitle("Delete all")
         builder.setMessage("Are you sure you want to remove all items?")
         builder.create().show()
+    }
+
+    override fun onQueryTextSubmit(q: String?): Boolean {
+        if(q!=null){
+            searchThroughDb(q)
+        }
+        return true
+    }
+
+    private fun searchThroughDb(q: String) {
+        val searchQuery = "%$q%"
+        mToDoVM.searchDatabase(searchQuery).oneTimeObserve(viewLifecycleOwner, Observer {
+            list -> list?.let{
+                adapter.setData(it)
+        }
+        })
+    }
+
+    override fun onQueryTextChange(q: String?): Boolean {
+        if(q!=null){
+            searchThroughDb(q)
+        }
+        return true
     }
 
 }

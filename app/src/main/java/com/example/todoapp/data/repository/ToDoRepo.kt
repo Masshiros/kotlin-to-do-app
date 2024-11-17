@@ -33,6 +33,13 @@ class ToDoRepo(private val toDoDao: ToDoDao) {
     suspend fun deleteAll(){
         toDoDao.deleteAll()
     }
+    suspend fun markAsCompleted(id: Int,completed:Boolean) {
+        toDoDao.markAsCompleted(id,completed)
+    }
+
+    suspend fun markAllAsCompleted() {
+        toDoDao.markAllAsCompleted()
+    }
 
     fun searchDatabase(searchQuery: String): LiveData<List<ToDoEntity>> {
         return toDoDao.searchDatabase(searchQuery)

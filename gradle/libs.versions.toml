@@ -15,6 +15,7 @@ lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2023.08.00"
 navigationFragmentKtx = "2.8.4"
+recyclerviewAnimators = "4.0.2"
 roomRuntime = "2.6.1"
 uiGraphicsAndroid = "1.7.5"
 
@@ -46,6 +47,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version.ref = "uiGraphicsAndroid" }
+recyclerview-animators = { module = "jp.wasabeef:recyclerview-animators", version.ref = "recyclerviewAnimators" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

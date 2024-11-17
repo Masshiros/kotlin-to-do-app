@@ -11,5 +11,6 @@ data class ToDoEntity(
     var id: Int=0,
     var title: String,
     var priority: EPriority,
-    var description: String
+    var description: String,
+    var completed: Boolean=false
 ): Parcelable

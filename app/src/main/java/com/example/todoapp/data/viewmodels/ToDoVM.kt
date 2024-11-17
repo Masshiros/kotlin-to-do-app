@@ -53,4 +53,15 @@ class ToDoVM(application: Application): AndroidViewModel(application) {
     fun searchDatabase(searchQuery: String): LiveData<List<ToDoEntity>> {
         return repository.searchDatabase(searchQuery)
     }
+    fun markAsCompleted(id: Int,completed:Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.markAsCompleted(id,completed)
+        }
+    }
+
+    fun markAllAsCompleted() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.markAllAsCompleted()
+        }
+    }
 }
